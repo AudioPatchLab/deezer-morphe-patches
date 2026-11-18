@@ -1,7 +1,7 @@
 {
-  "version": "1.1.3",
-  "download_url": "https://github.com/AudioPatchLab/deezer-morphe-patches/releases/download/v1.1.3/deezer-local-1.1.3.mpp",
-  "created_at": "2026-11-18T13:19:59",
-  "description": "Corrige le chargement après la première connexion, la lecture des favoris et des recommandations de profil, et le bouton de lecture des playlists.",
-  "page_url": "https://github.com/AudioPatchLab/deezer-morphe-patches/releases/tag/v1.1.3"
+  "version": "1.1.4",
+  "download_url": "https://github.com/AudioPatchLab/deezer-morphe-patches/releases/download/v1.1.4/deezer-local-1.1.4.mpp",
+  "created_at": "2026-11-18T14:05:57",
+  "description": "Corrige la lecture des titres récemment écoutés, retire l’encart Premium des téléchargements et affiche à zéro les compteurs négatifs du profil.",
+  "page_url": "https://github.com/AudioPatchLab/deezer-morphe-patches/releases/tag/v1.1.4"
 }
