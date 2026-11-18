@@ -17,6 +17,7 @@ val onDemandPlaybackPatch = featurePatch(
     artistTrackSelectionPatch,
     profileTrackSelectionPatch,
     libraryFavoriteTrackSelectionPatch,
+    recentlyPlayedPatch,
     smartTrackListSelectionPatch,
     collectionButtonsPatch,
 )
@@ -60,5 +61,6 @@ val hidePremiumOffersPatch = featurePatch(
     "Hides offer pop-ups, the Premium tab and upgrade buttons, and locked audio quality options.",
     studentOfferPatch,
     premiumTabPatch,
+    downloadedMusicOfferPatch,
     audioQualityOffersPatch,
 )
