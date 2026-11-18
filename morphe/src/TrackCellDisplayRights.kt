@@ -5,6 +5,7 @@ import app.morphe.patcher.patch.mutableClassDefBy
 import app.morphe.patcher.patch.patch
 import app.morphe.patcher.util.proxy.mutableTypes.MutableMethod
 import com.android.tools.smali.dexlib2.AccessFlags
+import com.android.tools.smali.dexlib2.Opcode
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.RegisterRangeInstruction
 import com.android.tools.smali.dexlib2.immutable.ImmutableMethod
@@ -62,4 +63,18 @@ internal fun MutableMethod.showSelectableTrackCell(bind: Int) {
             move-result-object v$rights
         """.trimIndent(),
     )
+}
+
+internal fun MutableMethod.showSelectableTrackCellsBeforeMapping(expectedCount: Int) {
+    val instructions = checkNotNull(implementation).instructions
+    val formatters = instructions.indices.filter { index ->
+        instructions[index].opcode == Opcode.INVOKE_STATIC_RANGE &&
+            (instructions[index] as ReferenceInstruction).reference.toString().startsWith(
+                "LlIIlllIII;->llIIIIlIlllllIl(LllIllIlIlIlIIl;",
+            ) &&
+            (instructions.getOrNull(index + 2) as? ReferenceInstruction)?.reference.toString() ==
+                "LIIIllIlIIlIIIlII;->llIIlllIIlIlIII(LIlIIllIIIlIIIll;)LIllIllIlllllllll;"
+    }
+    check(formatters.size == expectedCount)
+    formatters.asReversed().forEach { showSelectableTrackCell(it) }
 }

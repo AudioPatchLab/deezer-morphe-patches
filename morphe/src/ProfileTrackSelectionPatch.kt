@@ -16,21 +16,38 @@ internal val profileTrackSelectionPatch = patch {
         val rows = mutableClassDefBy("LllIlIllllIIlll;").methods.single {
             it.name == "invokeSuspend" && it.parameterTypes == listOf("Ljava/lang/Object;")
         }
-        val instructions = checkNotNull(rows.implementation).instructions
-        val profileMapper = instructions.indices.single { index ->
-            (instructions[index] as? ReferenceInstruction)?.reference.toString() ==
-                "LIIIllIIIlIIIIlI;->lIIIIIlllIlIIIIl(LIllIlllIlIIlllII;)LlIIlIIIIIlIlI;"
-        }
-        val bind = (profileMapper + 1 until instructions.size).first { index ->
-            instructions[index].opcode == Opcode.INVOKE_STATIC_RANGE
-        }
-        rows.showSelectableTrackCell(bind)
+        rows.showSelectableTrackCellsBeforeMapping(expectedCount = 2)
 
         // The profile's native Top tracks queue starts with the selected track ID.
         val tap = mutableClassDefBy("LlIIllllIIlllI;").methods.single {
             it.name == "invoke" && it.parameterTypes == listOf("Ljava/lang/Object;")
         }
         val actions = checkNotNull(tap.implementation).instructions
+        val recommendationPlayback = actions.indices.single { index ->
+            (actions[index] as? ReferenceInstruction)?.reference.toString() ==
+                "LIIllllllIllIIllI;->lIIIIlIIlIllIlll:LIlIllIllIIlII;"
+        }
+        check(actions[recommendationPlayback - 1].opcode == Opcode.IF_EQZ)
+        tap.replaceInstruction(recommendationPlayback - 1, "nop")
+
+        // The single-track router can still substitute a preview for the recommendation.
+        // Keep the full-track action only for the profile recommendation's listen context.
+        mutableClassDefBy("LlIIllIIIllIlI;").methods.single {
+            it.name == "IllIIIlIIII" && it.parameterTypes == listOf("LlIIIIlIll;")
+        }.addInstructionsWithLabels(
+            0,
+            """
+                iget-object v0, p0, LlIIllIIIllIlI;->llIIlllIIlIlIII:LIllllIlIIIIllIII;
+                iget-object v1, v0, LIllllIlIIIIllIII;->lIllIIIlIlIlll:LlIIlIlllIIlIlI;
+                iget-object v1, v1, LlIIlIlllIIlIlI;->lllIlIIIlllIIII:LIlIIlIIIlIlIlIlI;
+                sget-object v2, LIlIIlIIIlIlIlIlI;->IlIIIlIIlIlllII:LIlIIlIIIlIlIlIlI;
+                if-ne v1, v2, :original
+                return-object v0
+                :original
+                nop
+            """.trimIndent(),
+        )
+
         val policy = actions.indices.single { index ->
             actions[index].opcode == Opcode.INVOKE_VIRTUAL &&
                 (actions[index] as ReferenceInstruction).reference.toString() ==

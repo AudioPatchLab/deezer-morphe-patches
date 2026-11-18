@@ -89,5 +89,5 @@ internal val packageIdentityPatch = patch {
 }
 
 internal val appBasePatch = patch {
-    dependsOn(playbackSessionPatch, packageIdentityPatch)
+    dependsOn(playbackSessionPatch, packageIdentityPatch, homeLoadingPatch)
 }

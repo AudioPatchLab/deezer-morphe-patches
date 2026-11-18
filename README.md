@@ -24,7 +24,7 @@ Morphe affiche huit réglages. Chaque réglage active les composants internes n�
 
 | Entrée Morphe | Fonction et parcours à vérifier |
 | --- | --- |
-| **Choose tracks on demand** | Sélection d’un titre dans les albums, les playlists, les pages d’artistes, les « Top titres » des profils et les playlists Deezer générées. Vérifier les pochettes et les numéros des albums et des classements d’artistes, ainsi que les boutons de lecture dans l’ordre et en aléatoire. |
+| **Choose tracks on demand** | Sélection d’un titre dans les albums, les playlists, les pages d’artistes, les favoris de la bibliothèque, les « Top titres » et les recommandations des profils, ainsi que les playlists Deezer générées. |
 | **Enable player navigation** | Boutons précédent et suivant, sauts de titres et déplacement sur la barre de progression. Vérifier dans un album, une playlist et un mix. |
 | **Manage the playback queue** | Accès à la file et actions « Ajouter à la file d’attente » et « Écouter juste après ». Vérifier dans le menu à trois points d’un titre et contrôler sa position dans la file. |
 | **Search and sort playlists** | Loupe dans l’en-tête et action « Trier » dans le menu de playlist. Vérifier la recherche et le changement d’ordre sur une playlist personnelle. |
@@ -35,13 +35,15 @@ Morphe affiche huit réglages. Chaque réglage active les composants internes n�
 
 Le maintien de la session est une dépendance interne de chaque réglage, y compris lorsque seul le téléchargement ou seules les paroles sont activés. Morphe l’applique une fois par construction. Il désactive les journaux d’écoute `log.listen` et `log.batch_listen`, ce qui peut affecter l’historique d’écoute ou les recommandations. Le [diagnostic de déconnexion](morphe/DIAGNOSTIC.md#déconnexion-après-des-changements-de-titre) décrit les essais précédents.
 
-Les « Top titres » de l’onglet Musique d’un profil et le bloc « Their music, meant for you » de l’onglet de compatibilité sont deux parcours distincts. Dans le second bloc, le compte de test reçoit localement l’état `NO_MOD` pour les titres affichés. Cet état désactive leurs lignes. Voir [le diagnostic du profil](morphe/DIAGNOSTIC.md#affichage-et-sélection-du-morceau).
+Les « Top titres » de l’onglet Musique d’un profil et le bloc « Their music, meant for you » de l’onglet de compatibilité utilisent deux parcours de lecture. Les titres à la demande des recommandations et des favoris de la bibliothèque sont sélectionnables à partir du bundle 1.1.3. Voir [le diagnostic du profil](morphe/DIAGNOSTIC.md#affichage-et-sélection-du-morceau).
 
 Le téléchargement et le masquage des offres restent indépendants. Le filtre d’offres du menu contextuel s’applique à la finalisation pour conserver la logique de téléchargement lorsque les deux réglages sont activés. Tester le bundle complet sur Android et les réglages seuls à la compilation sert à contrôler ces deux usages.
 
 La version 1.1.0 a été construite, signée et ouverte sur l’émulateur avec les huit réglages. Douze sélections successives dans les « Top titres » de Daft Punk ont lancé le morceau choisi sans déconnexion. Les constructions séparées avec les paroles, le téléchargement et le masquage des offres ont également abouti.
 
 Après réorganisation du dossier, le bundle 1.1.2 a été reconstruit depuis les sources. Avec les huit réglages, l’APK obtenu a les mêmes fichiers internes que l’APK 1.1.2 précédent, hors métadonnées de signature. Il a été installé puis lancé sur un émulateur où l’officiel était déjà présent. La construction de `Search and sort playlists` seul a également abouti.
+
+Avec les huit réglages du bundle 1.1.3 sur Android 14, l’accueil s’est affiché environ sept secondes après la première connexion. « One More Time » depuis la bibliothèque et « Ma sœur » depuis un profil ont dépassé 30 secondes de lecture. Après douze sélections sur la playlist « Simon », son bouton a affiché l’icône Pause pendant la lecture puis l’icône Aléatoire après la mise en pause.
 
 ## Reconstruction sous Linux
 

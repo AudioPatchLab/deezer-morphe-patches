@@ -1,5 +1,6 @@
 /.local/
 /Compte_test.txt
+/morphe/Compte_test.txt
 /morphe/build/
 __pycache__/
 *.apk

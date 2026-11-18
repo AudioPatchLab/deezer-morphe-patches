@@ -16,6 +16,7 @@ val onDemandPlaybackPatch = featurePatch(
     collectionTrackSelectionPatch,
     artistTrackSelectionPatch,
     profileTrackSelectionPatch,
+    libraryFavoriteTrackSelectionPatch,
     smartTrackListSelectionPatch,
     collectionButtonsPatch,
 )
