@@ -4,11 +4,11 @@ Le projet cible **Deezer Android 9.0.26.3** (code `9002603`, Android 8.0 minimum
 
 ## Ajouter la source dans Morphe Manager
 
-1. Ouvrir [Ajouter la source dans Morphe](https://morphe.software/add-source?github=Epikaigle/deezer-morphe-patches). On peut aussi ouvrir **Sources → + → Distant** dans Morphe Manager et coller `https://github.com/Epikaigle/deezer-morphe-patches`.
+1. Ouvrir [Ajouter la source dans Morphe](https://morphe.software/add-source?github=AudioPatchLab/deezer-morphe-patches). On peut aussi ouvrir **Sources → + → Distant** dans Morphe Manager et coller `https://github.com/AudioPatchLab/deezer-morphe-patches`.
 2. Confirmer l’ajout de la source, puis sélectionner Deezer et fournir l’archive APKM **9.0.26.3**.
 3. Choisir les patchs à appliquer, puis lancer le patchage dans Morphe.
 
-Morphe lit [`patches-bundle.json`](https://raw.githubusercontent.com/Epikaigle/deezer-morphe-patches/main/patches-bundle.json) pour télécharger le bundle et détecter les mises à jour. Le fichier `.mpp` est également disponible dans les [releases GitHub](https://github.com/Epikaigle/deezer-morphe-patches/releases/latest) pour un import local. [Documentation de Morphe Manager](https://github.com/MorpheApp/morphe-manager/blob/main/docs/patch-sources.md)
+Morphe lit [`patches-bundle.json`](https://raw.githubusercontent.com/AudioPatchLab/deezer-morphe-patches/main/patches-bundle.json) pour télécharger le bundle et détecter les mises à jour. Le fichier `.mpp` est également disponible dans les [releases GitHub](https://github.com/AudioPatchLab/deezer-morphe-patches/releases/latest) pour un import local. [Documentation de Morphe Manager](https://github.com/MorpheApp/morphe-manager/blob/main/docs/patch-sources.md)
 
 | Chemin | Contenu |
 | --- | --- |
