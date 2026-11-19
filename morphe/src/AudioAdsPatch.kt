@@ -6,19 +6,19 @@ import app.morphe.patcher.patch.patch
 import com.android.tools.smali.dexlib2.Opcode
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 
-private const val AUDIO_AD_CONTROLLER = "LIIIIlllIllllIlI;"
+private const val AUDIO_AD_CONTROLLER = "LlIIIlIIIIIlIlII;"
 
 internal val audioAdsPatch = patch {
     compatibleWith(deezerCompatibility)
 
     execute {
         val schedule = mutableClassDefBy(AUDIO_AD_CONTROLLER).methods.single {
-            it.name == "lllIlIIIlllIIII" &&
+            it.name == "llIIIIIIlIIIIll" &&
                 it.parameterTypes == listOf("Ljava/lang/Runnable;") && it.returnType == "V"
         }
         check(checkNotNull(schedule.implementation).instructions.any {
             it.opcode == Opcode.IPUT_OBJECT && (it as ReferenceInstruction).reference.toString() ==
-                "$AUDIO_AD_CONTROLLER->lllIlllIlllIl:Ljava/lang/Runnable;"
+                "LlIIIlIIIIIlIlII;->IIllIIIIIIIllIll:Ljava/lang/Runnable;"
         })
 
         // Follow the existing no-ad completion path before the controller can queue an ad.

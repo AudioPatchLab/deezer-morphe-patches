@@ -20,14 +20,14 @@ import com.android.tools.smali.dexlib2.immutable.ImmutableMethodImplementation
 import com.android.tools.smali.dexlib2.immutable.ImmutableMethodParameter
 import com.android.tools.smali.dexlib2.immutable.reference.ImmutableMethodReference
 
-private const val QUEUE_EDITION_ENUM = "LIlIIIlIIlIlllIII;->llIIllllIlIIll:LIlIIIlIIlIlllIII;"
+private const val QUEUE_EDITION_ENUM = "LlIlIIIllIlIlll;->lIlIIlIIlIlIllI:LlIlIIIllIlIlll;"
 private const val HAS_ENTITLEMENT =
-    "Lcom/deezer/core/data/model/policy/lIllllIIIIII;->IIIIlIIIIIIIIlll(LIlIIIlIIlIlllIII;)Z"
-private const val TRACK_MENU = "LlIIIllIllIIIlII;"
-private const val MENU_TRACK = "LIlIIllIIlllllI;"
+    "Lcom/deezer/core/data/model/policy/IllIlIlIIlIllIll;->lIIIIlllIlllll(LlIlIIIllIlIlll;)Z"
+private const val TRACK_MENU = "LIIlllIIIIIlIlIlI;"
+private const val MENU_TRACK = "LIlIIlIlIIIII;"
 private const val MENU_TRACK_PLAYABLE = "morpheCanQueueTrack"
-private const val MENU_CONTEXT = "LIllIlllIlIIlllI;"
-private const val MENU_ACTION = "LIIlIlIIlIIIlI;"
+private const val MENU_CONTEXT = "LIIllIIIIlIllIIIl;"
+private const val MENU_ACTION = "LIlllIllIlllIIlll;"
 private const val PREPEND_ACTION = "morphePrependPlayerAction"
 
 private fun MutableMethod.allowQueueMenuAction(occurrence: Int, isTrackMenu: Boolean = false) {
@@ -47,7 +47,7 @@ private fun MutableMethod.allowQueueMenuAction(occurrence: Int, isTrackMenu: Boo
         (instructions[index].opcode == Opcode.INVOKE_INTERFACE ||
             instructions[index].opcode == Opcode.INVOKE_INTERFACE_RANGE ||
             instructions[index].opcode == Opcode.INVOKE_VIRTUAL) &&
-            (instructions[index] as ReferenceInstruction).reference.toString().endsWith("->lllIllIIlIIIIII()Z")
+            (instructions[index] as ReferenceInstruction).reference.toString().endsWith("->IlIllllIIlIlllII()Z")
     }
     if (editableCallIndex != null) {
         val editableMove = instructions[editableCallIndex + 1] as OneRegisterInstruction
@@ -59,7 +59,7 @@ private fun MutableMethod.allowQueueMenuAction(occurrence: Int, isTrackMenu: Boo
         val playable = (start + 1 until start + 20).first { index ->
             val instruction = instructions[index]
             instruction.opcode == Opcode.INVOKE_INTERFACE_RANGE &&
-                (instruction as ReferenceInstruction).reference.toString() == "$MENU_TRACK->lIllIIlIIIlIlII()Z"
+                (instruction as ReferenceInstruction).reference.toString() == "$MENU_TRACK->IIIIIllIIIlIIllI()Z"
         }
         val call = instructions[playable] as RegisterRangeInstruction
         check(call.registerCount == 1)
@@ -133,23 +133,23 @@ private fun queueTrackAvailability(): MutableMethod {
     method.addInstructionsWithLabels(
         0,
         """
-            invoke-interface {p0}, $MENU_TRACK->lIllIIlIIIlIlII()Z
+            invoke-interface {p0}, $MENU_TRACK->IIIIIllIIIlIIllI()Z
             move-result v0
             if-nez v0, :allowed
-            instance-of v0, p0, LlIllIllllIlIlIl;
+            instance-of v0, p0, LIIIIlllIIIIlIll;
             if-eqz v0, :legacy
-            check-cast p0, LlIllIllllIlIlIl;
-            iget-object v0, p0, LlIllIllllIlIlIl;->llIIlllIIlIlIII:LlIIIIlllIIllII;
-            iget-object v0, v0, LlIIIIlllIIllII;->lllIlIIIlllIIII:LIIllIIIIIIllI;
-            sget-object v1, LIIllIIIIIIllI;->IllIIIllIIllIlll:LIIllIIIIIIllI;
+            check-cast p0, LIIIIlllIIIIlIll;
+            iget-object v0, p0, LIIIIlllIIIIlIll;->IIIIIllIlIIllll:LllIIlIIIIlIllll;
+            iget-object v0, v0, LllIIlIIIIlIllll;->llIIIIIIlIIIIll:LlIlIlIlllIIIll;
+            sget-object v1, LlIlIlIlllIIIll;->IIlllIlllIlll:LlIlIlIlllIIIll;
             if-ne v0, v1, :unavailable
             :allowed
             const/4 v0, 0x1
             return v0
             :legacy
-            instance-of v0, p0, LlIllIIllllllIl;
+            instance-of v0, p0, LIIlIIIllllll;
             if-eqz v0, :unavailable
-            invoke-interface {p0}, $MENU_TRACK->IllIIIlIIII()Z
+            invoke-interface {p0}, $MENU_TRACK->IllIlIlIIlIllIll()Z
             move-result v0
             return v0
             :unavailable
@@ -167,13 +167,13 @@ internal val queueInsertionSupportPatch = patch {
         check(mutableClassDefBy(TRACK_MENU).methods.add(queueTrackAvailability()))
         check(mutableClassDefBy(MENU_CONTEXT).methods.add(prependPlayerAction()))
         bypassQueueEditUpsell(
-            mutableClassDefBy("LIlIlIIlIlIllII;"),
-            mutableClassDefBy("LllllIllIllIIllI;"),
+            mutableClassDefBy("LIlIIlllIIIllIII;"),
+            mutableClassDefBy("LIIllllllIIIlII;"),
         )
 
         // Allow queue insertion in IIIlIlllIlIlllll even when the queue is locked.
-        mutableClassDefBy("LIIIlIlllIlIlllll;").methods.single {
-            it.name == "lIllllIIIIII" && it.parameterTypes == listOf("LllllIlIlIllIIIl;", "LIIIlIlIIIlIIllIl;")
+        mutableClassDefBy("LlllIIIIlIIIIIlI;").methods.single {
+            it.name == "IllIlIlIIlIllIll" && it.parameterTypes == listOf("LlIIIIIlIIIIlIIl;", "LIlIlIllIlllllI;")
         }.apply {
             val instructions = checkNotNull(implementation).instructions
             val lockMsg = instructions.indices.single { index ->
@@ -183,7 +183,7 @@ internal val queueInsertionSupportPatch = patch {
             val editableCall = (lockMsg - 1 downTo 0).first { index ->
                 instructions[index].opcode == Opcode.INVOKE_INTERFACE &&
                     (instructions[index] as ReferenceInstruction).reference.toString() ==
-                    "LIIIlIIIIlllIIlll;->lllIllIIlIIIIII()Z"
+                    "LIIlllllIIlIlII;->IlIllllIIlIlllII()Z"
             }
             val moveResult = instructions[editableCall + 1] as OneRegisterInstruction
             check(moveResult.opcode == Opcode.MOVE_RESULT)
@@ -198,24 +198,24 @@ internal val playNextPatch = patch {
 
     execute {
         // This older menu shares its permission check for both queue actions.
-        mutableClassDefBy("LIIllIllIlII;").methods.single {
-            it.name == "IIllIIIlIIIllII" && it.parameterTypes.isEmpty() && it.returnType == "Ljava/util/ArrayList;"
+        mutableClassDefBy("LlIllIIllIIIIIll;").methods.single {
+            it.name == "IIlllIlIIlIlII" && it.parameterTypes.isEmpty() && it.returnType == "Ljava/util/ArrayList;"
         }.allowQueueMenuAction(occurrence = 0)
 
-        mutableClassDefBy("LllllIlIIIlII;").methods.single {
-            it.name == "IIlIIIIIlllIIIII" &&
+        mutableClassDefBy("LIIIIIllllIllllI;").methods.single {
+            it.name == "IIlIlIlIlIllllll" &&
                 it.parameterTypes == listOf("Ljava/lang/Object;", "Ljava/lang/Object;")
         }.allowQueueMenuAction(occurrence = 0)
 
-        mutableClassDefBy("LIlIIIIIlIlIIlII;").methods.single {
+        mutableClassDefBy("LIIlIlIlIlIIlIlI;").methods.single {
             it.name == "invokeSuspend" && it.parameterTypes == listOf("Ljava/lang/Object;")
         }.allowQueueMenuAction(occurrence = 0)
 
         mutableClassDefBy(TRACK_MENU).methods.single {
-            it.name == "IIllIIIlIIIllII" && it.parameterTypes.size == 6
+            it.name == "IIlllIlIIlIlII" && it.parameterTypes.size == 6
         }.allowQueueMenuAction(occurrence = 0, isTrackMenu = true)
 
         mutableClassDefBy(MENU_CONTEXT).methods.single { it.name == "<clinit>" }
-            .showPlayerQueueAction("IlIIllllIlIIIlI")
+            .showPlayerQueueAction("IllIIllIlIIll")
     }
 }

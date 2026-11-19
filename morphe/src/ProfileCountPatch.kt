@@ -9,13 +9,13 @@ internal val profileCountPatch = patch {
     compatibleWith(deezerCompatibility)
 
     execute {
-        val subtitle = mutableClassDefBy("LllIlIlllII;").methods.single {
+        val subtitle = mutableClassDefBy("LlIlIlIIlllIll;").methods.single {
             it.name == "<init>" && it.parameterTypes == listOf("I", "I")
         }
         val instructions = checkNotNull(subtitle.implementation).instructions
         check((instructions[1] as? ReferenceInstruction)?.reference.toString() ==
-            "LllIlIlllII;->lIllllIIIIII:I" &&
-            (instructions[2] as? ReferenceInstruction)?.reference.toString() == "LllIlIlllII;->lllIlIIIlllIIII:I")
+            "LlIlIlIIlllIll;->IllIlIlIIlIllIll:I" &&
+            (instructions[2] as? ReferenceInstruction)?.reference.toString() == "LlIlIlIIlllIll;->llIIIIIIlIIIIll:I")
 
         // Normalize the masthead's display values before formatting the labels and plural forms.
         subtitle.addInstructionsWithLabels(

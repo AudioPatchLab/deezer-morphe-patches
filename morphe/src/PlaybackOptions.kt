@@ -14,8 +14,8 @@ internal val preRollAdsPatch = patch {
 
     execute {
         // The player passes the same continuation to both the ad callback and its no-ad path.
-        mutableClassDefBy("LlllIlllIllIIl;").methods.single {
-            it.name == "IllIIllIllIIII" && it.parameterTypes == listOf("Ljava/lang/Runnable;", "Z", "Z")
+        mutableClassDefBy("LIIlIllIIllllll;").methods.single {
+            it.name == "IIlllIIlIIllIIII" && it.parameterTypes == listOf("Ljava/lang/Runnable;", "Z", "Z")
         }.addInstructions(
             0,
             """
@@ -51,11 +51,11 @@ val lyricsPatch = patch(
 
     execute {
         // The legacy and Compose players have separate click handlers for the same feature.
-        mutableClassDefBy("LlIlllIllllIIIII;").methods.single {
+        mutableClassDefBy("LIlIlIllllIIlIII;").methods.single {
             it.name == "onClick" && it.parameterTypes == listOf("Landroid/view/View;")
         }.openLyrics()
-        mutableClassDefBy("LIlIlIIlIlIllII;").methods.single {
-            it.name == "IlIlIIlllIlIIIII" && it.parameterTypes == listOf("LIlIIllIIlllllI;", "LIIIlIIlIlllIIlll;")
+        mutableClassDefBy("LIlIIlllIIIllIII;").methods.single {
+            it.name == "IlIllIIIlIIIlIIl" && it.parameterTypes == listOf("LIlIIlIlIIIII;", "LIllllIIIIlIllIII;")
         }.openLyrics()
     }
 }

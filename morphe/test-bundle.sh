@@ -12,7 +12,7 @@ test_dir="$workspace/.local/test"
 sdk_root=${ANDROID_HOME:-${ANDROID_SDK_ROOT:-$HOME/Android/Sdk}}
 java_bin=${JAVA_HOME:+$JAVA_HOME/bin/}java
 desktop_jar=${MORPHE_DESKTOP_JAR:-"$workspace/.local/tools/morphe-desktop.jar"}
-archive=${DEEZER_ARCHIVE:-"$workspace/.local/apks/stock/deezer.android.app_9.0.26.3.apkm"}
+archive=${DEEZER_ARCHIVE:?Set DEEZER_ARCHIVE to the original supported APKM archive}
 version=$(<"$project_dir/VERSION")
 bundle="$project_dir/build/deezer-local-$version.mpp"
 keystore="$test_dir/test-keystore.p12"
@@ -57,6 +57,22 @@ output=$(mktemp -d "$test_dir/run.XXXXXXXX")
     --keystore "$keystore" --striplibs x86_64 \
     -t "$output/work" -r "$output/result.json" -o "$output/deezer.apk" "$archive" \
     2>&1 | tee "$output/patch.log"
+
+# Desktop may report success after rebuilding an APK even when patching failed.
+# Never install that output or treat an unchanged APK as a successful test.
+python3 - "$output/result.json" "$selected_patch" <<'PY'
+import json
+import sys
+
+with open(sys.argv[1]) as report:
+    result = json.load(report)
+if (not result.get("success") or not result.get("appliedPatches")
+        or result.get("failedPatches")
+        or any(not step.get("success") for step in result.get("stepResults", []))):
+    raise SystemExit("Patching failed; inspect result.json and patch.log. Output will not be installed.")
+if not sys.argv[2] and len(result["appliedPatches"]) != 8:
+    raise SystemExit("Expected all eight public patches; output will not be installed.")
+PY
 
 "$sdk_root/build-tools/36.1.0/apksigner" verify "$output/deezer.apk"
 rm -rf -- "$output/work"

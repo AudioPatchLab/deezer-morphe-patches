@@ -12,20 +12,20 @@ internal val displayAdsPatch = patch {
 
     execute {
         // Report display ads as disabled in the policy model.
-        val hasAdType = mutableClassDefBy("Lcom/deezer/core/data/model/policy/lIllllIIIIII;").methods.single {
-            it.name == "llIIIllIlIllIII" && it.parameterTypes == listOf("LIIIIIIllIllIIIl;") && it.returnType == "Z"
+        val hasAdType = mutableClassDefBy("Lcom/deezer/core/data/model/policy/IllIlIlIIlIllIll;").methods.single {
+            it.name == "IlIIlIlIlllIII" && it.parameterTypes == listOf("LllIIIllIIIIlIll;") && it.returnType == "Z"
         }
         check(
             checkNotNull(hasAdType.implementation).instructions.any { instruction ->
                 instruction.opcode == Opcode.IGET &&
                     (instruction as ReferenceInstruction).reference.toString() ==
-                    "Lcom/deezer/core/data/model/policy/lIllllIIIIII;->IlIIIllIIllIll:I"
+                    "Lcom/deezer/core/data/model/policy/IllIlIlIIlIllIll;->lIIIIIlllIlIll:I"
             },
         )
         hasAdType.addInstructionsWithLabels(
             0,
             """
-                sget-object v0, LIIIIIIllIllIIIl;->IllIIIllIIllIlll:LIIIIIIllIllIIIl;
+                sget-object v0, LllIIIllIIIIlIll;->IIlllIlllIlll:LllIIIllIIIIlIll;
                 if-ne p1, v0, :original
                 const/4 v0, 0x0
                 return v0
@@ -35,9 +35,9 @@ internal val displayAdsPatch = patch {
         )
 
         // Disable banner placements and ad-unit path generation on album, playlist, and artist pages.
-        val displayAdHelper = mutableClassDefBy("LlIIlIlllIllIlI;")
+        val displayAdHelper = mutableClassDefBy("LIlIIlIIIlIllll;")
         val isBannerEnabled = displayAdHelper.methods.single {
-            it.name == "IllIIIlIIII" && it.parameterTypes.isEmpty() && it.returnType == "Z"
+            it.name == "IIlIlIlIlIllllll" && it.parameterTypes.isEmpty() && it.returnType == "Z"
         }
         check(
             checkNotNull(isBannerEnabled.implementation).instructions.any { instruction ->
@@ -54,7 +54,7 @@ internal val displayAdsPatch = patch {
         )
 
         val adUnitPath = displayAdHelper.methods.single {
-            it.name == "lllIlIIIlllIIII" && it.parameterTypes == listOf("Ljava/lang/String;") && it.returnType == "Ljava/lang/String;"
+            it.name == "llIIIIIIlIIIIll" && it.parameterTypes == listOf("Ljava/lang/String;") && it.returnType == "Ljava/lang/String;"
         }
         check(
             checkNotNull(adUnitPath.implementation).instructions.any { instruction ->
@@ -71,14 +71,14 @@ internal val displayAdsPatch = patch {
         )
 
         // Skip loading native ad cards on the home feed.
-        val homeNativeAdLoader = mutableClassDefBy("LIIlIIlllIlIIIlI;").methods.single {
-            it.name == "IllIIIllIIllIlll" && it.parameterTypes.isEmpty() && it.returnType == "V"
+        val homeNativeAdLoader = mutableClassDefBy("LIIIIlIIlIllllII;").methods.single {
+            it.name == "IIlllIlllIlll" && it.parameterTypes.isEmpty() && it.returnType == "V"
         }
         check(
             checkNotNull(homeNativeAdLoader.implementation).instructions.any { instruction ->
                 instruction.opcode == Opcode.IGET_OBJECT &&
                     (instruction as ReferenceInstruction).reference.toString() ==
-                    "LIIlIIlllIlIIIlI;->lIIIIIIIIllllIII:LIIlllIIlllIIIl;"
+                    "LIIIIlIIlIllllII;->IllIllIIllIIllI:LIIIllIllIIlIIlll;"
             },
         )
         homeNativeAdLoader.addInstructions(0, "return-void")

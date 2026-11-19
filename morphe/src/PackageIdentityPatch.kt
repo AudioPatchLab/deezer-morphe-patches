@@ -27,6 +27,7 @@ private fun XmlElement.rewritePackageAttribute(name: String) {
 
 internal val packageIdentityPatch = patch {
     compatibleWith(deezerCompatibility)
+    dependsOn(startupCompatibilityPatch)
 
     execute {
         resourceXml("AndroidManifest.xml").use { manifest ->
@@ -58,12 +59,12 @@ internal val packageIdentityPatch = patch {
         // Keep the callers of the renamed providers in the new app namespace.
         val providerReferences = mapOf(
             "Ldeezer/android/utils/SearchSuggestionProvider;" to SEARCH_AUTHORITY,
-            "LIlIllIlIIIIIllII;" to SOCIAL_STORY_AUTHORITY,
-            "LlllIlIIlIIllI;" to SOCIAL_STORY_AUTHORITY,
-            "LIIllllIIlIllllII;" to SOCIAL_STORY_AUTHORITY,
-            "LlIIIllllIIllIll;" to ORIGINAL_PACKAGE,
-            "LllIIIllIIlIIllI;" to ORIGINAL_PACKAGE,
-            "LlIIlIIllIIIIIll;" to ORIGINAL_PACKAGE,
+            "LlIIlIIllIIlIllI;" to SOCIAL_STORY_AUTHORITY,
+            "LlIIIlIlllIII;" to SOCIAL_STORY_AUTHORITY,
+            "LIlIIIIlllIIIIlll;" to SOCIAL_STORY_AUTHORITY,
+            "LIlIIIIllllIIll;" to ORIGINAL_PACKAGE,
+            "LIlIlIIllIIllIlll;" to ORIGINAL_PACKAGE,
+            "LIIIllIlllIIlIIIl;" to ORIGINAL_PACKAGE,
         )
         for ((type, oldValue) in providerReferences) {
             var matches = 0

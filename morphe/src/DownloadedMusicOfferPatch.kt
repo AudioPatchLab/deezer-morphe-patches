@@ -13,20 +13,19 @@ internal val downloadedMusicOfferPatch = patch {
     compatibleWith(deezerCompatibility)
 
     execute {
-        val page = mutableClassDefBy("LIIlllIIllIIlllII;").methods.single {
+        val page = mutableClassDefBy("LlIIlIIllIIIllI;").methods.single {
             it.name == "invokeSuspend" && it.parameterTypes == listOf("Ljava/lang/Object;")
         }
         val instructions = checkNotNull(page.implementation).instructions
         val subtitle = instructions.indices.single {
-            (instructions[it] as? NarrowLiteralInstruction)?.narrowLiteral == 0x7f140aae
+            (instructions[it] as? NarrowLiteralInstruction)?.narrowLiteral == 0x7f140ab1
         }
-        val offer = (subtitle - 7 until subtitle).single {
-            (instructions[it] as? ReferenceInstruction)?.reference.toString() ==
-                "Lcore/auth/module/models/AppConversionEntrypoint;->getDescription()Ljava/lang/String;"
+        val bannerGate = (subtitle - 15 until subtitle).single { index ->
+            val branch = instructions[index] as? BuilderInstruction21t
+            branch?.opcode == Opcode.IF_EQZ && branch.target.location.index > subtitle &&
+                instructions[index + 1].opcode == Opcode.NEW_INSTANCE
         }
-        val bannerGate = offer - 3
         val branch = instructions[bannerGate] as BuilderInstruction21t
-        check(branch.opcode == Opcode.IF_EQZ)
         // Use the page's existing no-banner branch, then build the downloaded collections normally.
         page.replaceInstruction(bannerGate, BuilderInstruction20t(Opcode.GOTO_16, branch.target))
     }

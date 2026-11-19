@@ -13,34 +13,34 @@ internal val profileTrackSelectionPatch = patch {
     dependsOn(trackCellDisplayRightsPatch)
 
     execute {
-        val rows = mutableClassDefBy("LllIlIllllIIlll;").methods.single {
+        val rows = mutableClassDefBy("LIlllIllIlllIllI;").methods.single {
             it.name == "invokeSuspend" && it.parameterTypes == listOf("Ljava/lang/Object;")
         }
         rows.showSelectableTrackCellsBeforeMapping(expectedCount = 2)
 
         // The profile's native Top tracks queue starts with the selected track ID.
-        val tap = mutableClassDefBy("LlIIllllIIlllI;").methods.single {
+        val tap = mutableClassDefBy("LIIllIIIIlIlIIII;").methods.single {
             it.name == "invoke" && it.parameterTypes == listOf("Ljava/lang/Object;")
         }
         val actions = checkNotNull(tap.implementation).instructions
         val recommendationPlayback = actions.indices.single { index ->
             (actions[index] as? ReferenceInstruction)?.reference.toString() ==
-                "LIIllllllIllIIllI;->lIIIIlIIlIllIlll:LIlIllIllIIlII;"
+                "LlllllIIllll;->IIIlIIllIlIllIll:LllllllIlllIlll;"
         }
         check(actions[recommendationPlayback - 1].opcode == Opcode.IF_EQZ)
         tap.replaceInstruction(recommendationPlayback - 1, "nop")
 
         // The single-track router can still substitute a preview for the recommendation.
         // Keep the full-track action only for the profile recommendation's listen context.
-        mutableClassDefBy("LlIIllIIIllIlI;").methods.single {
-            it.name == "IllIIIlIIII" && it.parameterTypes == listOf("LlIIIIlIll;")
+        mutableClassDefBy("LlllIlllIIllllIl;").methods.single {
+            it.name == "IIlIlIlIlIllllll" && it.parameterTypes == listOf("LlIIIIIlllIlIlll;")
         }.addInstructionsWithLabels(
             0,
             """
-                iget-object v0, p0, LlIIllIIIllIlI;->llIIlllIIlIlIII:LIllllIlIIIIllIII;
-                iget-object v1, v0, LIllllIlIIIIllIII;->lIllIIIlIlIlll:LlIIlIlllIIlIlI;
-                iget-object v1, v1, LlIIlIlllIIlIlI;->lllIlIIIlllIIII:LIlIIlIIIlIlIlIlI;
-                sget-object v2, LIlIIlIIIlIlIlIlI;->IlIIIlIIlIlllII:LIlIIlIIIlIlIlIlI;
+                iget-object v0, p0, LlllIlllIIllllIl;->IIIIIllIlIIllll:LlIIIIIlIIIIIlll;
+                iget-object v1, v0, LlIIIIIlIIIIIlll;->IIllllIIIIIlIIl:LIllllllIIIlIlIl;
+                iget-object v1, v1, LIllllllIIIlIlIl;->llIIIIIIlIIIIll:LlIlIIlllIIIIIl;
+                sget-object v2, LlIlIIlllIIIIIl;->IlllIIIIIlIIllII:LlIlIIlllIIIIIl;
                 if-ne v1, v2, :original
                 return-object v0
                 :original
@@ -51,9 +51,9 @@ internal val profileTrackSelectionPatch = patch {
         val policy = actions.indices.single { index ->
             actions[index].opcode == Opcode.INVOKE_VIRTUAL &&
                 (actions[index] as ReferenceInstruction).reference.toString() ==
-                "LllIIlIllIIIllIl;->IllIIIlIIII(Ljava/lang/String;LlllIllIlIIIl;)Z" &&
+                "LlIIllIlIIIlIlIl;->IIlIlIlIlIllllll(Ljava/lang/String;LIllllIIIIlllIIII;)Z" &&
                 (actions.getOrNull(index + 2) as? ReferenceInstruction)?.reference.toString() ==
-                "LIlIIlIIIlIlIlIlI;->IIlllIllllllII:LIlIIlIIIlIlIlIlI;"
+                "LlIlIIlllIIIIIl;->lllIlIlIIIIllll:LlIlIIlllIIIIIl;"
         }
         val result = actions[policy + 1] as OneRegisterInstruction
         check(result.opcode == Opcode.MOVE_RESULT && actions[policy + 3].opcode == Opcode.IF_EQZ)
@@ -61,24 +61,24 @@ internal val profileTrackSelectionPatch = patch {
         tap.replaceInstruction(policy + 1, "const/4 v${result.registerA}, 0x1")
 
         // The full list uses legacy rows. Only change the playback policy for its callback.
-        val legacyRows = mutableClassDefBy("LIllIIIlIIlllllIl;").methods.single {
-            it.name == "IllIIIlIIII" && it.parameterTypes == listOf("LlIIIIlIllIIIIIll;")
+        val legacyRows = mutableClassDefBy("LIlIllIIIIllllI;").methods.single {
+            it.name == "IIlIlIlIlIllllll" && it.parameterTypes == listOf("LlIlIlIIIIIll;")
         }
         val legacyInstructions = checkNotNull(legacyRows.implementation).instructions
         val legacyPolicy = legacyInstructions.indices.single { index ->
             (legacyInstructions[index] as? ReferenceInstruction)?.reference.toString() ==
-                "LlllIlIlIIlIlI;->lIllllIIIIII(LIIlIlIlllllIllII;Ljava/lang/String;)Z"
+                "LIllIlllIIlllI;->IllIlIlIIlIllIll(LIllIllIllIll;Ljava/lang/String;)Z"
         }
         val legacyResult = legacyInstructions[legacyPolicy + 1] as OneRegisterInstruction
         check(legacyResult.opcode == Opcode.MOVE_RESULT &&
             (legacyInstructions[legacyPolicy + 2] as? ReferenceInstruction)?.reference.toString() ==
-            "LIllIIIlIIlllllIl;->lIllIIIlIlIlll:LllIIIIIIllllllI;")
+            "LIlIllIIIIllllI;->IIllllIIIIIlIIl:LIIlIlIlIllIIll;")
         legacyRows.addInstructionsWithLabels(
             legacyPolicy + 2,
             """
                 move-object/from16 v8, p0
-                iget-object v8, v8, LIllIIIlIIlllllIl;->lIIIIlIIlIllIlll:LIlllIllIlIllIl;
-                instance-of v8, v8, LIlIlIIlIllIlIlII;
+                iget-object v8, v8, LIlIllIIIIllllI;->IIIlIIllIlIllIll:LIlIllIllIIlIlIl;
+                instance-of v8, v8, LlIIIlIlIllIlIl;
                 if-eqz v8, :keep_policy
                 const/4 v${legacyResult.registerA}, 0x1
                 :keep_policy
@@ -86,13 +86,13 @@ internal val profileTrackSelectionPatch = patch {
             """.trimIndent(),
         )
 
-        val legacyTap = mutableClassDefBy("LIlIlIIlIllIlIlII;").methods.single {
-            it.name == "IIIlIlIllllIllIl" && it.parameterTypes == listOf("Landroid/view/View;", "Ljava/lang/Object;")
+        val legacyTap = mutableClassDefBy("LlIIIlIlIllIlIl;").methods.single {
+            it.name == "llIlIllIIIl" && it.parameterTypes == listOf("Landroid/view/View;", "Ljava/lang/Object;")
         }
         val legacyActions = checkNotNull(legacyTap.implementation).instructions
         val route = legacyActions.indices.single { index ->
             (legacyActions[index] as? ReferenceInstruction)?.reference.toString() ==
-                "LlllIIIIlIIIlIlI;->IllIIIlIIII(Ljava/lang/String;)LIIllllIllIIIll;"
+                "LIIIIllIIIlII;->IIlIlIlIlIllllll(Ljava/lang/String;)LIIIlIllIllllII;"
         }
         val routeResult = legacyActions[route + 1] as OneRegisterInstruction
         check(routeResult.opcode == Opcode.MOVE_RESULT_OBJECT)
@@ -101,9 +101,9 @@ internal val profileTrackSelectionPatch = patch {
         legacyTap.addInstructionsWithLabels(
             route + 2,
             """
-                instance-of v3, v$routeRegister, LIIIllIlIIll;
+                instance-of v3, v$routeRegister, LIIlIlIlllIllII;
                 if-eqz v3, :keep_route
-                sget-object v$routeRegister, LlIlllIlIIII;->lIllllIIIIII:LlIlllIlIIII;
+                sget-object v$routeRegister, LllllllIIIIllIll;->IllIlIlIIlIllIll:LllllllIIIIllIll;
                 :keep_route
                 nop
             """.trimIndent(),

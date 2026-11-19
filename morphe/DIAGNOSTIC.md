@@ -1,5 +1,31 @@
 # Technical diagnostics
 
+## Deezer 9.0.27.3 compatibility
+
+The bundle port targets the original Android 8+ multi-architecture APKM from APKMirror (arm64-v8a, x86, and x86_64). The input archive SHA-256 is `ca4c9662e18f49d11b234c1c21437767d7afe1551aa28abf9dbabdaa1be7d83e`. Other archive variants have not been validated and may be rejected. Older app versions require their matching earlier bundle.
+
+All eight public patches apply together, rebuild, and sign successfully. Comparing the patched DEX against the original finds no newly unresolved types, methods, or fields.
+
+This version adds protected startup code. `StartupCompatibilityPatch.kt` restores Deezer's Application lifecycle, 1,560 static application strings, 20 extracted lifecycle methods, and 20 receiver/background callbacks. The callback implementations preserve media-button handling, Cast, shortcuts, and SDK dispatch; an obsolete SDK logging-only lambda is omitted. The encoded DEX data contains only the restored methods, not the complete application or account data.
+
+Three native libraries also acquire protection: `libflacJNI.so`, `libquickjs.so`, and `libACRCloudUniversalEngine.so`. Their build IDs match the unprotected builds from the preceding app version for each supported ABI. `StartupNativeLibraries.kt` applies compressed byte-range deltas and checks both input and output SHA-256. Unsupported architectures or changed input files fail patching instead of producing an unchecked APK. The bundle does not contain complete native libraries.
+
+The first authenticated Home screen can remain on its loading row. A delayed check runs after the Home fragment resumes. If that row is still the only item, the activity is recreated once per process to reset the stalled state. The check uses the loading-row type rather than the child position of its progress bar, and the process-wide guard prevents repeated recreation.
+
+Runtime checks use an Android 14 x86_64 emulator with host GPU acceleration and all eight patches enabled together:
+
+- Existing app-data upgrade and a fresh sign-in; automatic Home recovery confirmed.
+- Album playback beyond 30 seconds, selection from library favorites, and opening lyrics.
+- A profile recommendation played beyond 30 seconds with its full duration.
+- Recently Played rows are selectable; the selected title played beyond 30 seconds.
+- Player pause/resume through Android media controls, seeking, queue display, Play next insertion, and Add to queue (19 to 20 items).
+- Playlist search filtered to one matching track; alphabetical sorting and restoration of default order.
+- Ten consecutive next commands: each started a different track, the session remained authenticated, the playlist button settled on pause, and the crash buffer stayed empty.
+- Downloading the test playlist, disabling networking, restarting the app, and playing a downloaded title.
+- The downloads page does not show the Premium banner; zero profile counters display as zero.
+
+Native restoration outputs for arm64-v8a and x86 are integrity-checked, but runtime validation does not cover physical ARM devices, Android Auto/Cast hardware, every region, or every advertising format. The server-side limitations documented in the README still apply.
+
 ## Disconnection after track changes
 
 The test APK from November 17, 2026, before the fix already applied **Spoof playlog signature**. While playing successive tracks from *Discovery*, the trace recorded several HTTP 200 responses to `log.listen`, followed by an `EXPIRED_SESSION` in that same request. The app then received its invalid-credentials event and called its logout procedure. HTTP 200 alone is therefore insufficient to validate a sequence of playback requests.
