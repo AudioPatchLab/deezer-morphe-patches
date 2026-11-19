@@ -1,14 +1,14 @@
 # Morphe patches for Deezer Android
 
-Eight patches for **Deezer Android 9.0.26.3** (Android 8.0+). Use the original APKM archive with package name `deezer.android.app`. The patched app uses `deezer.android.app.morphe` and can be installed alongside the official app.
+Patches for **Deezer Android**, distributed as a Morphe bundle. Supported Deezer versions, Android requirements, and input file types are declared in the generated [`patches-list.json`](patches-list.json) and shown in Morphe Manager. The patched app uses `deezer.android.app.morphe` and can be installed alongside the official app.
 
 ## Install
 
 1. Open [Add source to Morphe](https://morphe.software/add-source?github=AudioPatchLab/deezer-morphe-patches), or add `https://github.com/AudioPatchLab/deezer-morphe-patches` as a remote source in Morphe Manager.
-2. Select Deezer and provide the original **9.0.26.3 APKM** archive.
+2. Select Deezer and provide the original app archive for a compatible version shown in Morphe Manager (package name `deezer.android.app`).
 3. Choose your patches and start patching.
 
-For local import, download the `.mpp` bundle from [GitHub Releases](https://github.com/AudioPatchLab/deezer-morphe-patches/releases/latest). Other Deezer versions are not supported by this bundle.
+For local import, download the `.mpp` bundle from [GitHub Releases](https://github.com/AudioPatchLab/deezer-morphe-patches/releases/latest). Compatibility depends on the bundle you use; a newer Deezer release is not automatically supported.
 
 ## Regional availability
 
@@ -41,17 +41,17 @@ Previous investigations and test details are in [`morphe/DIAGNOSTIC.md`](morphe/
 
 ## Development
 
-Sources are in [`morphe/src/`](morphe/src/), with the bundle version in [`morphe/VERSION`](morphe/VERSION). The build requires **JDK 21**, **Gradle 9.8.2**, Android SDK platform **34**, Build Tools **36.1.0**, and [Morphe Desktop 2.2.0](https://github.com/MorpheApp/morphe-desktop/releases/tag/v2.2.0) (Morphe Patcher 2.4.0).
+Sources are in [`morphe/src/`](morphe/src/), with the bundle version in [`morphe/VERSION`](morphe/VERSION). The build uses a JDK, the Kotlin compiler supplied by Gradle, the Android SDK, and a [Morphe Desktop](https://github.com/MorpheApp/morphe-desktop) JAR. Check [`morphe/build-bundle.sh`](morphe/build-bundle.sh) for compiler, SDK, and Patcher requirements, and the [metadata workflow](.github/workflows/sync-community-patches.yml) for the pinned Desktop release. Use compatible tool versions rather than assuming the latest releases will work.
 
 Place the Desktop JAR at `.local/tools/morphe-desktop.jar`, then run from the repository root:
 
 ```bash
-export JAVA_HOME=/path/to/jdk-21
+export JAVA_HOME=/path/to/jdk
 export ANDROID_HOME=/path/to/Android/Sdk
-./morphe/build-bundle.sh .local/tools/morphe-desktop.jar /path/to/gradle-9.8.2
+./morphe/build-bundle.sh .local/tools/morphe-desktop.jar /path/to/gradle
 ```
 
-The bundle is written to `morphe/build/`. For device testing, import it into Morphe Manager. The optional [`morphe/test-bundle.sh`](morphe/test-bundle.sh) helper builds signed x86_64 APKs and applies all eight patches by default; it requires the original APKM, a local test signing key, and Android Platform Tools. Validate changes with all eight patches enabled together. Keep accounts, APKs, signing keys, and session logs out of Git; `.local/` is ignored.
+The bundle is written to `morphe/build/`. For device testing, import it into Morphe Manager. The optional [`morphe/test-bundle.sh`](morphe/test-bundle.sh) helper builds signed x86_64 APKs and applies all patches by default; it requires a compatible original archive, a local test signing key, and Android Platform Tools. Set `DEEZER_ARCHIVE` to your archive’s path. Validate changes with all patches enabled together. Keep accounts, APKs, signing keys, and session logs out of Git; `.local/` is ignored.
 
 ## Publishing
 
