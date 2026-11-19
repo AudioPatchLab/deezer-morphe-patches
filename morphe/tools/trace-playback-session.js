@@ -34,7 +34,7 @@ Java.perform(() => {
             const request = Java.cast(chain, chainClass).IIlIIIIIlllIIIII.value;
             method = /[?&]method=([\w.]+)/.exec(String(request))?.[1];
         } catch (_) {
-            console.log('Le nom de la requête est indisponible.');
+            console.log('Request name unavailable.');
         }
         try {
             if (method) methods.set(thread, method);
@@ -66,5 +66,5 @@ Java.perform(() => {
         console.log('=== Application.logout switching=' + z + '\n' + stack());
         return this.IlIIllIlIIIIIlI(c, z);
     };
-    console.log('logout trace prête');
+    console.log('Logout trace ready');
 });

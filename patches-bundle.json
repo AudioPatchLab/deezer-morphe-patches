@@ -2,6 +2,6 @@
   "version": "1.1.4",
   "download_url": "https://github.com/AudioPatchLab/deezer-morphe-patches/releases/download/v1.1.4/deezer-local-1.1.4.mpp",
   "created_at": "2026-11-18T14:05:57",
-  "description": "Corrige la lecture des titres récemment écoutés, retire l’encart Premium des téléchargements et affiche à zéro les compteurs négatifs du profil.",
+  "description": "Fixes recently played tracks, removes the Premium banner from downloads, and displays negative profile counts as zero.",
   "page_url": "https://github.com/AudioPatchLab/deezer-morphe-patches/releases/tag/v1.1.4"
 }

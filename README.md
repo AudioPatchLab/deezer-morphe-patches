@@ -8,6 +8,8 @@ Patches for **Deezer Android**, distributed as a Morphe bundle. Supported Deezer
 2. Select Deezer and provide the original app archive for a compatible version shown in Morphe Manager (package name `deezer.android.app`).
 3. Choose your patches and start patching.
 
+You can get the original Deezer app archive from [APKMirror](https://www.apkmirror.com/uploads/?appcategory=deezer-music-podcast-player). Choose a version and file type supported by your bundle, as shown in Morphe Manager. Morphe also provides a download link during app selection.
+
 For local import, download the `.mpp` bundle from [GitHub Releases](https://github.com/AudioPatchLab/deezer-morphe-patches/releases/latest). Compatibility depends on the bundle you use; a newer Deezer release is not automatically supported.
 
 ## Regional availability
@@ -39,7 +41,7 @@ This is the Free-specific list published in [Deezer’s support article](https:/
 - The shared session-persistence component disables `log.listen` and `log.batch_listen`, which may affect listening history and recommendations.
 - Behavior can vary with the account, region, and server responses. Not every ad format or playback scenario has been verified.
 
-Previous investigations and test details are in [`morphe/DIAGNOSTIC.md`](morphe/DIAGNOSTIC.md) (in French).
+Previous investigations and test details are in [`morphe/DIAGNOSTIC.md`](morphe/DIAGNOSTIC.md).
 
 ## Development
 

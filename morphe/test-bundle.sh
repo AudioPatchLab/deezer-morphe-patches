@@ -2,7 +2,7 @@
 set -euo pipefail
 
 usage() {
-    printf 'Usage: %s [--patch "Nom exact"] [--install <serial>] [--open <lien Deezer>]\n' "$0" >&2
+    printf 'Usage: %s [--patch "Exact name"] [--install <serial>] [--open <Deezer URL>]\n' "$0" >&2
     exit 2
 }
 
@@ -35,7 +35,7 @@ done
 
 for file in "$desktop_jar" "$archive" "$bundle" "$keystore"; do
     if [[ ! -r $file ]]; then
-        printf 'Fichier requis introuvable ou illisible : %s\n' "$file" >&2
+        printf 'Required file missing or unreadable: %s\n' "$file" >&2
         exit 1
     fi
 done
@@ -47,7 +47,7 @@ adb="$sdk_root/platform-tools/adb"
 if [[ -n $serial ]]; then
     # Keep this helper on a test emulator. Refuse any unqualified installation.
     if [[ $serial != emulator-* || $("$adb" -s "$serial" get-state) != device ]]; then
-        printf 'Émulateur de test indisponible : %s\n' "$serial" >&2
+        printf 'Test emulator unavailable: %s\n' "$serial" >&2
         exit 1
     fi
 fi
