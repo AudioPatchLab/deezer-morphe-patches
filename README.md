@@ -16,7 +16,9 @@ For local import, download the `.mpp` bundle from [GitHub Releases](https://gith
 
 A user in **Japan** reported this behavior: account creation and sign-in succeeded, but the app then required a subscription with no way to continue. The current bundle does not resolve that restriction. We have not reproduced it locally or verified the behavior in every affected country.
 
-Check [Deezer’s official country availability list](https://support.deezer.com/hc/en-gb/articles/115003749449-List-Of-Countries-Deezer-Is-Available-In) before installing.
+**Countries with Deezer Free:** United States (mobile only), Brazil, Germany, France, Canada, Great Britain, United Arab Emirates, Belgium, Ireland, Saudi Arabia, Turkey, and Ukraine.
+
+This is the Free-specific list published in [Deezer’s support article](https://support.deezer.com/hc/en-gb/articles/115003749449-List-Of-Countries-Deezer-Is-Available-In). Look for the paragraph beginning “Deezer Free is available in”, above the continent tables. Those tables include countries with paid plans and do not indicate Free availability. Japan is not on the Free list. Availability may change; check that paragraph for updates.
 
 ## Patches
 
