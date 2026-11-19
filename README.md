@@ -10,6 +10,8 @@ Le projet cible **Deezer Android 9.0.26.3** (code `9002603`, Android 8.0 minimum
 
 Morphe lit [`patches-bundle.json`](https://raw.githubusercontent.com/AudioPatchLab/deezer-morphe-patches/main/patches-bundle.json) pour télécharger le bundle et détecter les mises à jour. Le fichier `.mpp` est également disponible dans les [releases GitHub](https://github.com/AudioPatchLab/deezer-morphe-patches/releases/latest) pour un import local. [Documentation de Morphe Manager](https://github.com/MorpheApp/morphe-manager/blob/main/docs/patch-sources.md)
 
+Le fichier [`patches-list.json`](patches-list.json) décrit les huit patchs pour l’[annuaire communautaire](https://morphe-patches.software/?app=deezer.android.app). Il suit le format du [générateur officiel](https://github.com/MorpheApp/morphe-patches-template/blob/main/patches/src/main/kotlin/util/PatchListGenerator.kt). Sa présence prépare le référencement ; l’ajout à l’annuaire dépend de la validation de son équipe.
+
 | Chemin | Contenu |
 | --- | --- |
 | [`morphe/src/`](morphe/src/) | Sources Kotlin des huit réglages et des dépendances internes |
@@ -104,6 +106,17 @@ Partager le README et le dossier `morphe/` sans la sortie de construction. La pe
 1. Incrémenter `morphe/VERSION`, reconstruire et tester le bundle avec les scripts ci-dessus, puis pousser les sources.
 2. Créer une release GitHub stable avec le tag `v<version>` et joindre `morphe/build/deezer-local-<version>.mpp`.
 3. Mettre à jour `patches-bundle.json` sur `main` avec la version sans préfixe, le lien direct vers le fichier de la release, la date et l’heure UTC au format `AAAA-MM-JJTHH:MM:SS`, et la description. Ce fichier doit pointer vers un téléchargement déjà accessible.
+4. Vérifier le succès de l’action **Sync community patches list**. Elle télécharge le bundle publié, en extrait les métadonnées et met à jour `patches-list.json` sur `main`. Elle refuse une version différente de celle de `patches-bundle.json`. On peut aussi la relancer depuis **Actions → Sync community patches list → Run workflow**.
+
+La liste est générée depuis le `.mpp` publié, et non depuis des sources qui pourraient déjà préparer une version suivante. Les noms, descriptions, options et compatibilités proviennent des objets chargés par Morphe Patcher. Ne pas modifier `patches-list.json` à la main. Pour reproduire la génération localement avec JDK 21, télécharger [Gson 2.13.2](https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.13.2/gson-2.13.2.jar) dans `.local/tools/gson-2.13.2.jar`, puis lancer :
+
+```bash
+"$JAVA_HOME/bin/java" --class-path '.local/tools/morphe-desktop.jar:.local/tools/gson-2.13.2.jar' \
+  morphe/GeneratePatchesList.java morphe/build/deezer-local-1.1.4.mpp \
+  patches-bundle.json patches-list.json
+```
+
+Adapter le nom du `.mpp` à la version publiée. Les versions des outils et leurs empreintes SHA-256 sont fixées dans le workflow.
 
 ## Suite
 
