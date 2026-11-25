@@ -10,16 +10,16 @@ internal val playbackRestorePatch = patch {
     execute {
         // Cold restoration checks the effective MOD feature again, independently of
         // selectable rows. Keep that verdict consistent with on-demand playback.
-        val feature = mutableClassDefBy("Lcom/deezer/core/data/model/policy/IllIlIlIIlIllIll;").methods.single {
-            it.name == "lIIIIlllIlllll" && it.parameterTypes == listOf("LlIlIIIllIlIlll;") &&
+        val feature = mutableClassDefBy("Lcom/deezer/core/data/model/policy/lIIIIIlllllIIIII;").methods.single {
+            it.name == "IIIlIIIIIIIlIl" && it.parameterTypes == listOf("LIIllIlIllllllIlI;") &&
                 it.returnType == "Z"
         }
         check(checkNotNull(feature.implementation).instructions.any {
             (it as? ReferenceInstruction)?.reference.toString() ==
-                "Lcom/deezer/core/data/model/policy/IllIlIlIIlIllIll;->IIlllIlIIlIlII:I"
+                "Lcom/deezer/core/data/model/policy/lIIIIIlllllIIIII;->IIllIIlIIIlIIlll:I"
         })
         feature.addInstructionsWithLabels(0, """
-            sget-object v0, LlIlIIIllIlIlll;->IIlllIlllIlll:LlIlIIIllIlIlll;
+            sget-object v0, LIIllIlIllllllIlI;->lIIlIlIllIl:LIIllIlIllllllIlI;
             if-ne p1, v0, :native
             const/4 v0, 0x1
             return v0

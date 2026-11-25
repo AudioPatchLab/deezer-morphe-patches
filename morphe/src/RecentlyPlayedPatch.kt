@@ -10,20 +10,20 @@ import com.android.tools.smali.dexlib2.immutable.ImmutableMethodImplementation
 import com.android.tools.smali.dexlib2.Opcode
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 
-private const val PLAYBACK_SCOPE = "LIllIllIllIll;"
+private const val PLAYBACK_SCOPE = "LlIIlIllIIlIlI;"
 
 internal val recentlyPlayedPatch = patch {
     compatibleWith(deezerCompatibility)
 
     execute {
-        val owner = mutableClassDefBy("LlIIllIlIIIlIlIl;")
+        val owner = mutableClassDefBy("LIl;")
         val original = owner.methods.single {
-            it.name == "IllIlIlIIlIllIll" &&
+            it.name == "lIIIIIlllllIIIII" &&
                 it.parameterTypes == listOf(PLAYBACK_SCOPE, "Ljava/lang/String;") && it.returnType == "Z"
         }
         val instructions = checkNotNull(original.implementation).instructions
         check(instructions[1].opcode == Opcode.IF_NEZ && instructions[5].opcode == Opcode.SGET_OBJECT &&
-            (instructions[5] as ReferenceInstruction).reference.toString() == "LIIlIlIIlIIIIlll;->IllIlIlIIlIllIll:[I")
+            (instructions[5] as ReferenceInstruction).reference.toString() == "LIlIIIIIIllIlIIII;->lIIIIIlllllIIIII:[I")
         val native = MutableMethod(ImmutableMethod(original.definingClass, "morpheNativeScopePolicy",
             original.parameters, "Z", AccessFlags.PRIVATE.value, original.annotations,
             original.hiddenApiRestrictions, original.implementation))
@@ -35,17 +35,17 @@ internal val recentlyPlayedPatch = patch {
             0,
             """
                 if-eqz p2, :original
-                sget-object v0, LIllIllIllIll;->IlIlIIlIIllIlIlI:$PLAYBACK_SCOPE
+                sget-object v0, LlIIlIllIIlIlI;->IIIllIlllllIlIIl:$PLAYBACK_SCOPE
                 if-eq p1, v0, :selectable
-                sget-object v0, LIllIllIllIll;->IlIllllIIlIlllII:$PLAYBACK_SCOPE
+                sget-object v0, LlIIlIllIIlIlI;->IlllIIllIIIIll:$PLAYBACK_SCOPE
                 if-eq p1, v0, :selectable
-                sget-object v0, LIllIllIllIll;->IlllIIllIIIIllIl:$PLAYBACK_SCOPE
+                sget-object v0, LlIIlIllIIlIlI;->llIIIIIllIIl:$PLAYBACK_SCOPE
                 if-ne p1, v0, :original
                 :selectable
                 const/4 v0, 0x1
                 return v0
                 :original
-                invoke-direct {p0, p1, p2}, LlIIllIlIIIlIlIl;->morpheNativeScopePolicy(${PLAYBACK_SCOPE}Ljava/lang/String;)Z
+                invoke-direct {p0, p1, p2}, LIl;->morpheNativeScopePolicy(${PLAYBACK_SCOPE}Ljava/lang/String;)Z
                 move-result v0
                 return v0
             """.trimIndent(),

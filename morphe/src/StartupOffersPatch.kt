@@ -16,14 +16,14 @@ internal val startupOffersPatch = patch {
         // Independently verified against 9.0.27.3. R8 shares this class with
         // consent/logout rules: only variant 8 is the no-freemium redirect.
         // See johninnld/nl-morphe-patches, RemovePaywallsPatch.kt (7622f42).
-        val rule = mutableClassDefBy("LlllllIlIIllIl;").methods.single {
-            it.name == "llIIIIIIlIIIIll" && it.parameterTypes ==
-                listOf("Landroid/content/Context;", "LIllllllIllIllIII;") &&
-                it.returnType == "LIlllllIIllIllII;"
+        val rule = mutableClassDefBy("LIIlllIllIlIIllII;").methods.single {
+            it.name == "IllIlllIIIllIlII" && it.parameterTypes ==
+                listOf("Landroid/content/Context;", "LIIlIIlIIlIIIlll;") &&
+                it.returnType == "LIIIlIIIIIIIIIlII;"
         }
         check(checkNotNull(rule.implementation).registerCount >= 5)
         rule.addInstructionsWithLabels(0, """
-            iget v0, p0, LlllllIlIIllIl;->IllIlIlIIlIllIll:I
+            iget v0, p0, LIIlllIllIlIIllII;->lIIIIIlllllIIIII:I
             const/16 v1, 0x8
             if-ne v0, v1, :native_rule
             const/4 v0, 0x0

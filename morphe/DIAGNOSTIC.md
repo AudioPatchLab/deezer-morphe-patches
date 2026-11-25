@@ -1,6 +1,20 @@
 # Technical diagnostics
 
-## Audio quality request and response verification
+## Deezer 9.0.27.4 and bundle 1.2.4
+
+This bundle targets the tested 9.0.27.4 APKMirror archive (Android 8.0+, arm64-v8a/x86/x86_64, version code 9002704). The base APK passed signature verification with Deezer's certificate, SHA-256 `51a891a6c5d17b4e36a6f46bab675c1cae786a5af06f51d0105dab7ec6a94516`. Archive SHA-256: `82a688f3a44fcc6c95855176c06fd058d4a343c57d9f46f2449e0ae43bf0d08f`.
+
+Version 1.2.4 removes **Show audio quality choices**. The native account permissions determine the available qualities; the existing quality upgrade-prompt removal remains part of **Hide Premium offers**. The tested Free account displayed only Standard on Mobile data, WiFi and Google Cast.
+
+The 9.0.27.4 application starts directly with `DZMidlet`, without the 9.0.27.3 PairIP startup wrapper. Obsolete string, lifecycle, callback and native-library restoration code was removed from this version's bundle. Patch targets, member references and resource IDs were adapted to the new build. Earlier app versions remain available through the corresponding earlier bundle releases.
+
+All nine public patches applied, rebuilt, signed, installed and launched together on the Android 14 x86_64 emulator using the AMD RX 6600 host GPU. A second build disabled only **Install alongside official Deezer**, applying the other eight patches. Both outputs passed the DEX comparison audit with zero new unresolved types and zero new unresolved references. Generated metadata confirms the optional package suffix patch is enabled by default.
+
+Actual media-notification card taps reopened the matching package with both installations present: `deezer.android.app.morphe` and `deezer.android.app`. The unsuffixed installation also completed a fresh test-account login and loaded Home. Album selection played Digital Love; seeking moved it to 2:30; starting its mix preserved the track and elapsed time and created an 82-track queue. Next selected Face to Face, and the lyrics view opened without the Premium prompt.
+
+Discovery downloaded all 14 tracks as complete PERMANENT entries, totaling 58,726,171 bytes, all marked MP3_128. With guest WiFi and mobile data disabled, One More Time advanced from 0:06 to 0:15; network settings were restored afterward. Play next inserted the selected track directly after the current item. Adding Paradis to the queue increased its count from 15 to 16 and displayed Paradis in the user queue. Playlist search filtered results for Paradis; alphabetical track sorting showed 1,2,3 Soleil followed by À l'inverse, and Default restored the original order. Physical Android Auto and every possible ad, account, region and server-response scenario are not covered by these emulator checks.
+
+## Historical audio quality request and response verification
 
 Version 1.2.3 removes the Basic bit from the quality picker instead of forcing every quality bit. On the tested account, the menu contains Standard, HQ and HiFi. This changes presentation only; licence parsing and the server's format decision remain native.
 
@@ -23,7 +37,7 @@ Version 1.2.2 removes the empty-user persistence guard added in 1.2.1. The patch
 
 ## Playback continuity and audio preferences
 
-The current bundle exposes ten public patches. Tests in this section use all ten together on the Android 14 x86_64 emulator, with hardware GPU rendering. The final bundle applied, rebuilt, signed, installed and launched successfully. The DEX audit found zero new unresolved types or references. A final search selected **Défaite de famille** by Orelsan; force-stop/reopen and a subsequent reinstall retained its paused position at 55,000 ms.
+Version 1.2.1 exposed ten public patches. Tests in this section used all ten together on the Android 14 x86_64 emulator, with hardware GPU rendering. The final bundle applied, rebuilt, signed, installed and launched successfully. The DEX audit found zero new unresolved types or references. A final search selected **Défaite de famille** by Orelsan; force-stop/reopen and a subsequent reinstall retained its paused position at 55,000 ms.
 
 `MixContinuityPatch.kt` handles a mix whose seed ID matches the currently playing track. It removes upcoming items through the native queue operation and inserts recommendations after the current item, excluding the seed ID. It does not dispatch a replacement/play action or restart the decoder. The native shuffle replacement can choose another song; the native replacement/play action resets playback. Tests preserved a paused track at 50,000 ms, continued playback beyond that position, kept the seed after repeated mix requests, populated the upcoming queue, and advanced to the next recommendation. Other seed IDs retain native behavior.
 
