@@ -35,13 +35,13 @@ This is the Free-specific list published in [Deezer’s support article](https:/
 | **Search and sort playlists** | Search from playlist headers and sort from playlist menus. |
 | **Block ads** | Hide banner and native ads and skip visual pre-rolls and audio ad breaks. |
 | **Hide Premium offers** | Hide offer pop-ups, the Premium tab, upgrade buttons, and audio quality upgrade prompts. |
-| **Show audio quality choices** | Show the native quality preferences for streaming and downloads. Available streams still depend on your account and Deezer's response. |
+| **Show audio quality choices** | Show native HQ and HiFi preferences without Basic. This only changes the choices shown; available streams still depend on your account and Deezer's response. |
 | **Open lyrics from the player** | Open the lyrics view from the player. |
 | **Enable offline downloads** | Enable download actions, subject to server-side stream availability. |
 
 ## Known limitations
 
-- Downloads and audio quality depend on the streams Deezer provides. A previous free-account test received MP3 at 128 kbit/s; hiding quality offers does not unlock higher-quality streams.
+- Downloads and audio quality depend on the streams Deezer provides. In the tested Free account, requesting HQ or HiFi still returned `MP3_128`. Exposing quality choices does not unlock streams, and native account checks can reset an unsupported preference to Standard.
 - The shared session-persistence component disables `log.listen` and `log.batch_listen`, which may affect listening history and recommendations.
 - Behavior can vary with the account, region, and server responses. Not every ad format or playback scenario has been verified.
 - Android Auto has not been validated in a car or with a physical phone. Emulator media controls and local queue restoration do not cover the complete car-host experience.

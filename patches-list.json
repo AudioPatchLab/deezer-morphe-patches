@@ -1,6 +1,6 @@
 {
   "NOTE": "Generated from the published MPP by morphe/GeneratePatchesList.java. Do not edit manually.",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "patches": [
     {
       "name": "Block ads",
@@ -247,7 +247,7 @@
     },
     {
       "name": "Show audio quality choices",
-      "description": "Shows the native Basic, Standard, High Quality and High Fidelity preferences. Actual streaming and download quality still depend on the account and server response.",
+      "description": "Shows native HQ and HiFi preferences alongside the qualities already offered by the app. This does not unlock streams: account checks can restore an allowed quality and the server can return a lower-quality format.",
       "default": true,
       "category": null,
       "compatiblePackages": [

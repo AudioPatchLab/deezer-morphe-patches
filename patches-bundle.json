@@ -1,7 +1,7 @@
 {
-  "version": "1.2.2",
-  "download_url": "https://github.com/AudioPatchLab/deezer-morphe-patches/releases/download/v1.2.2/deezer-local-1.2.2.mpp",
-  "created_at": "2026-11-25T13:14:02",
-  "description": "Removes the preventive empty-user session persistence guard and restores the app's original user-save behavior. Retains the playback queue restoration and startup offer fixes.",
-  "page_url": "https://github.com/AudioPatchLab/deezer-morphe-patches/releases/tag/v1.2.2"
+  "version": "1.2.3",
+  "download_url": "https://github.com/AudioPatchLab/deezer-morphe-patches/releases/download/v1.2.3/deezer-local-1.2.3.mpp",
+  "created_at": "2026-11-25T13:49:05",
+  "description": "Removes Basic from audio quality choices and documents verified server fallback to MP3_128 on the tested Free account. Quality preferences do not unlock higher-quality streams.",
+  "page_url": "https://github.com/AudioPatchLab/deezer-morphe-patches/releases/tag/v1.2.3"
 }

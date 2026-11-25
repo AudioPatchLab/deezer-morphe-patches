@@ -8,12 +8,13 @@ import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 @Suppress("unused")
 val audioQualityChoicesPatch = patch(
     name = "Show audio quality choices",
-    description = "Shows the native Basic, Standard, High Quality and High Fidelity preferences. Actual streaming and download quality still depend on the account and server response.",
+    description = "Shows native HQ and HiFi preferences alongside the qualities already offered by the app. This does not unlock streams: account checks can restore an allowed quality and the server can return a lower-quality format.",
 ) {
     compatibleWith(deezerCompatibility)
     dependsOn(appBasePatch)
     execute {
-        // Change only the UI list builder, not the licence parser or format identifiers.
+        // Basic is intentionally hidden. Keep the other original bits and add
+        // only HQ and HiFi; this does not change the server's format decision.
         val choices = mutableClassDefBy("LIIllIIIlIllIllI;").methods.single {
             it.name == "IIllllIIIIllIl" &&
                 it.parameterTypes == listOf("Landroid/content/Context;", "I") &&
@@ -25,7 +26,8 @@ val audioQualityChoicesPatch = patch(
         } == 4)
         choices.addInstructionsWithLabels(0, """
             if-lez p1, :native
-            const/16 p1, 0xf
+            and-int/lit8 p1, p1, -0x2
+            or-int/lit8 p1, p1, 0xc
             :native
             nop
         """.trimIndent())

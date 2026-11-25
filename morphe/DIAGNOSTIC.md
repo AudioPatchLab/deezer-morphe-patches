@@ -1,5 +1,22 @@
 # Technical diagnostics
 
+## Audio quality request and response verification
+
+Version 1.2.3 removes the Basic bit from the quality picker instead of forcing every quality bit. On the tested account, the menu contains Standard, HQ and HiFi. This changes presentation only; licence parsing and the server's format decision remain native.
+
+With all ten patches enabled on the emulator, the unmodified account-quality model advertised mask 2 (Standard) for mobile, WiFi and Cast. A read-only Frida trace confirmed that choosing HQ saved preference 4 and choosing HiFi saved 8. The app subsequently wrote preference 2 again through native account revalidation. Keeping an unsupported preference selected would not establish higher-quality playback.
+
+Fresh-track request/response checks on November 25, 2026:
+
+| Selection | Track | Requested formats | Parsed media-service response |
+| --- | --- | --- | --- |
+| HQ | Blue Rondo à la Turk (Album Version), Dave Brubeck | MP3_320, MP3_128 | MP3_128 |
+| HiFi | Unsquare Dance, Dave Brubeck | FLAC, MP3_320, MP3_128 | MP3_128 |
+
+The encrypted cache held 6,459,976 bytes for the 404-second HQ test and 1,918,431 bytes for the 120-second HiFi test, approximately 127.9 kbit/s in each case. A separate HiFi request for Take Five produced 5,187,708 bytes over 324 seconds, approximately 128.1 kbit/s. These are average cached-media sizes divided by duration, corroborating the explicit server format; they are not instantaneous network-throughput readings or a decoded elementary-stream probe. FFprobe could not directly parse the encrypted cache.
+
+These observations apply to this account and the tested patched APK. They do not establish what the supplied AndroForever APK receives. Android audio-output sample rates and codec default bitrate fields also must not be mistaken for a measurement of the downloaded source.
+
 ## Removal of the preventive user-save guard
 
 Version 1.2.2 removes the empty-user persistence guard added in 1.2.1. The patched user-save method's disassembled instructions match the original APK exactly. All ten public patches applied, rebuilt, signed and installed together. After a force-stop/reopen, **Sounds Like a Melody (2019 Remaster)** remained paused at 50,000 ms with its 31-track queue. The separate queue restoration and startup offer fixes remain enabled.
