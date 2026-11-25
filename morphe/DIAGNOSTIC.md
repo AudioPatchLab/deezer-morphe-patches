@@ -1,12 +1,16 @@
 # Technical diagnostics
 
+## Removal of the preventive user-save guard
+
+Version 1.2.2 removes the empty-user persistence guard added in 1.2.1. The patched user-save method's disassembled instructions match the original APK exactly. All ten public patches applied, rebuilt, signed and installed together. After a force-stop/reopen, **Sounds Like a Melody (2019 Remaster)** remained paused at 50,000 ms with its 31-track queue. The separate queue restoration and startup offer fixes remain enabled.
+
 ## Playback continuity and audio preferences
 
 The current bundle exposes ten public patches. Tests in this section use all ten together on the Android 14 x86_64 emulator, with hardware GPU rendering. The final bundle applied, rebuilt, signed, installed and launched successfully. The DEX audit found zero new unresolved types or references. A final search selected **Défaite de famille** by Orelsan; force-stop/reopen and a subsequent reinstall retained its paused position at 55,000 ms.
 
 `MixContinuityPatch.kt` handles a mix whose seed ID matches the currently playing track. It removes upcoming items through the native queue operation and inserts recommendations after the current item, excluding the seed ID. It does not dispatch a replacement/play action or restart the decoder. The native shuffle replacement can choose another song; the native replacement/play action resets playback. Tests preserved a paused track at 50,000 ms, continued playback beyond that position, kept the seed after repeated mix requests, populated the upcoming queue, and advanced to the next recommendation. Other seed IDs retain native behavior.
 
-`PlaybackRestorePatch.kt` keeps the effective MOD feature consistent with **Choose tracks on demand**. Row selection alone did not cover the native cold-restoration check: a persisted queue remained in the database while the player opened empty. With this feature enabled, force-stopping and reopening restored the same track, its 12,538 ms position, and the queue. Other feature verdicts retain their native behavior. `PlaybackSessionPatch.kt` also avoids persisting an incomplete signed-in user with an empty ID during background startup.
+`PlaybackRestorePatch.kt` keeps the effective MOD feature consistent with **Choose tracks on demand**. Row selection alone did not cover the native cold-restoration check: a persisted queue remained in the database while the player opened empty. With this feature enabled, force-stopping and reopening restored the same track, its 12,538 ms position, and the queue. Other feature verdicts retain their native behavior. The preventive empty-user persistence guard introduced in 1.2.1 was removed in 1.2.2; user persistence follows the original app code. This is separate from queue restoration and the existing listening-log fix.
 
 **Show audio quality choices** changes the native preferences list builder. Streaming and download preferences use that builder; it does not change the licence parser, format identifiers, or server tokens. The emulator showed the four choices and accepted HQ selection. With WiFi High Fidelity selected, tested cache entries were still named `MP3_128`; these tests do not establish higher-quality delivery.
 
