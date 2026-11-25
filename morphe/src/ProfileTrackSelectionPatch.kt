@@ -31,7 +31,8 @@ internal val profileTrackSelectionPatch = patch {
         tap.replaceInstruction(recommendationPlayback - 1, "nop")
 
         // The single-track router can still substitute a preview for the recommendation.
-        // Keep the full-track action only for the profile recommendation's listen context.
+        // Keep the full-track action for profile recommendations and search.
+        // ExactSearchTrackPatch replaces the search action's mix-backed fetch.
         mutableClassDefBy("LlllIlllIIllllIl;").methods.single {
             it.name == "IIlIlIlIlIllllll" && it.parameterTypes == listOf("LlIIIIIlllIlIlll;")
         }.addInstructionsWithLabels(
@@ -41,7 +42,14 @@ internal val profileTrackSelectionPatch = patch {
                 iget-object v1, v0, LlIIIIIlIIIIIlll;->IIllllIIIIIlIIl:LIllllllIIIlIlIl;
                 iget-object v1, v1, LIllllllIIIlIlIl;->llIIIIIIlIIIIll:LlIlIIlllIIIIIl;
                 sget-object v2, LlIlIIlllIIIIIl;->IlllIIIIIlIIllII:LlIlIIlllIIIIIl;
+                if-eq v1, v2, :full_track
+                sget-object v2, LlIlIIlllIIIIIl;->IIlIlllIllllllll:LlIlIIlllIIIIIl;
+                if-eq v1, v2, :full_track
+                sget-object v2, LlIlIIlllIIIIIl;->IlIIIIllIIIllIII:LlIlIIlllIIIIIl;
+                if-eq v1, v2, :full_track
+                sget-object v2, LlIlIIlllIIIIIl;->IIIlIIIllIIlIll:LlIlIIlllIIIIIl;
                 if-ne v1, v2, :original
+                :full_track
                 return-object v0
                 :original
                 nop

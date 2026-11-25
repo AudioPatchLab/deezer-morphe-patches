@@ -25,7 +25,11 @@ private fun XmlElement.rewritePackageAttribute(name: String) {
     }
 }
 
-internal val packageIdentityPatch = patch {
+@Suppress("unused")
+val packageIdentityPatch = patch(
+    name = "Install alongside official Deezer",
+    description = "Adds .morphe to the package ID. Deselect to keep deezer.android.app. Replacing an existing official installation requires uninstalling it because the signing keys differ.",
+) {
     compatibleWith(deezerCompatibility)
     dependsOn(startupCompatibilityPatch)
 
@@ -33,6 +37,12 @@ internal val packageIdentityPatch = patch {
         resourceXml("AndroidManifest.xml").use { manifest ->
             check(manifest.root.attribute("package") == ORIGINAL_PACKAGE)
             manifest.root.setAttribute("package", PATCHED_PACKAGE)
+            // The media notification derives this action from Context.getPackageName().
+            val playerActions = manifest.elements("action").filter {
+                it.attribute("android:name") == "$ORIGINAL_PACKAGE.GO_TO_PLAYER"
+            }
+            check(playerActions.count() == 1) { "Missing player notification intent filter" }
+            playerActions.single().setAttribute("android:name", "$PATCHED_PACKAGE.GO_TO_PLAYER")
             manifest.elements("provider").forEach { provider ->
                 provider.rewritePackageAttribute("android:authorities")
                 if (provider.attribute("android:permission") == ACCOUNT_PERMISSION) {
@@ -90,5 +100,5 @@ internal val packageIdentityPatch = patch {
 }
 
 internal val appBasePatch = patch {
-    dependsOn(playbackSessionPatch, packageIdentityPatch, homeLoadingPatch, profileCountPatch)
+    dependsOn(playbackSessionPatch, startupCompatibilityPatch, homeLoadingPatch, profileCountPatch)
 }

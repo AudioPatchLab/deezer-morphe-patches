@@ -70,8 +70,8 @@ if (not result.get("success") or not result.get("appliedPatches")
         or result.get("failedPatches")
         or any(not step.get("success") for step in result.get("stepResults", []))):
     raise SystemExit("Patching failed; inspect result.json and patch.log. Output will not be installed.")
-if not sys.argv[2] and len(result["appliedPatches"]) != 8:
-    raise SystemExit("Expected all eight public patches; output will not be installed.")
+if not sys.argv[2] and len(result["appliedPatches"]) != 10:
+    raise SystemExit("Expected all ten public patches; output will not be installed.")
 PY
 
 "$sdk_root/build-tools/36.1.0/apksigner" verify "$output/deezer.apk"

@@ -1,5 +1,43 @@
 # Technical diagnostics
 
+## Playback continuity and audio preferences
+
+The current bundle exposes ten public patches. Tests in this section use all ten together on the Android 14 x86_64 emulator, with hardware GPU rendering. The final bundle applied, rebuilt, signed, installed and launched successfully. The DEX audit found zero new unresolved types or references. A final search selected **Défaite de famille** by Orelsan; force-stop/reopen and a subsequent reinstall retained its paused position at 55,000 ms.
+
+`MixContinuityPatch.kt` handles a mix whose seed ID matches the currently playing track. It removes upcoming items through the native queue operation and inserts recommendations after the current item, excluding the seed ID. It does not dispatch a replacement/play action or restart the decoder. The native shuffle replacement can choose another song; the native replacement/play action resets playback. Tests preserved a paused track at 50,000 ms, continued playback beyond that position, kept the seed after repeated mix requests, populated the upcoming queue, and advanced to the next recommendation. Other seed IDs retain native behavior.
+
+`PlaybackRestorePatch.kt` keeps the effective MOD feature consistent with **Choose tracks on demand**. Row selection alone did not cover the native cold-restoration check: a persisted queue remained in the database while the player opened empty. With this feature enabled, force-stopping and reopening restored the same track, its 12,538 ms position, and the queue. Other feature verdicts retain their native behavior. `PlaybackSessionPatch.kt` also avoids persisting an incomplete signed-in user with an empty ID during background startup.
+
+**Show audio quality choices** changes the native preferences list builder. Streaming and download preferences use that builder; it does not change the licence parser, format identifiers, or server tokens. The emulator showed the four choices and accepted HQ selection. With WiFi High Fidelity selected, tested cache entries were still named `MP3_128`; these tests do not establish higher-quality delivery.
+
+Static inspection of the supplied AndroForever 9.0.27.2 APK found a changed quality-mask parser: the `standard` branch returns all bits instead of only the Standard bit. That can advertise additional choices locally. Visible request code still uses Deezer's media service and licence/track tokens. The inspected path does not demonstrate a local audio transcoder or an alternate server authorization route. The protected wrapper and ARM-only runtime prevent a complete runtime attribution on this emulator. Earlier aggregate traffic counts are insufficient to prove authentic 320 kbit/s or lossless audio.
+
+The [John NL patches](https://gitlab.com/johninnld/nl-morphe-patches) were reviewed for comparison. Their custom Android Auto host admission and templated car UI are separate from this bundle's native MediaBrowser support. Shell media play/pause/next controls work, but a physical phone/car host remains untested. Sideloaded media apps may need Android Auto's **Allow unknown sources**, as documented in [Google's testing instructions](https://developer.android.com/training/cars/testing).
+
+## Exact track selection from search
+
+The previous search route made rows selectable but still called `song.getSearchTrackMix`. Its result mapper did not carry the selected ID, and subsequent fallback filtering could change the returned queue. In an all-patch emulator test, selecting **C'est dur d'aimer** played **Coeur en or** instead.
+
+`ExactSearchTrackPatch.kt` scopes an exact fetch to the three search listen contexts, including recent searches. It uses Deezer's native `song_getListData` request with the selected ID and its native list/model parsers. The response mapper accepts only the matching ID, preserves the native metadata conversion, and starts a one-track queue without mix fallback filtering. A missing ID fails the action instead of substituting a recommendation. Other listen contexts retain their original fetch behavior.
+
+Search taps also bypass reuse of an equal in-flight dispatcher action. This lets the native dispatcher cancel the previous job when rapidly switching A → B → A. Without this adjustment, two rapid-click trials ended on the penultimate selection; with it, six repeated and four varied rapid-click sequences ended on the expected title.
+
+Validation used all nine public patches together on the Android 14 x86_64 emulator. The bundle applied, rebuilt, signed, installed and launched successfully; the DEX reference audit found zero new unresolved types or references. Android's active media session confirmed the selected titles for **C'est dur d'aimer**, **Dur d'y croire**, **C'est Quoi Ton Délire**, and **Défaite de famille**. The latter continued to 46 seconds without changing title. Selecting **Basique** from Recent searches also started Basique by Orelsan. These runtime checks do not establish availability for every catalogue item or account region.
+
+## Follow-up: search, startup offers and package selection
+
+Recent searches use separate cached-track mappers (`LIlllIllIlllIllI;` and `LIllIlIllll;`). Their account-only on-demand denial is normalized as well. On the emulator, Basique, DFTF, Veridis Quo and One More Time are no longer grey in Recent searches; selecting Basique directly from that list starts Basique by Orelsan, with a full 2:44 duration. This check used the complete nine-patch bundle.
+
+This earlier test stage exposed nine public patches, before audio quality preferences were added. `Install alongside official Deezer` is enabled by default and can be deselected to retain the original package ID. Shared startup restoration remains a dependency in both modes. The renamed manifest matches the media notification action generated from the installed package name.
+
+Search rows retain catalogue availability checks but no longer map the on-demand account denial to a disabled row. Search-origin full-track requests retain the selected track instead of being replaced with a recommendation mix. The scope-policy wrapper preserves the original ID and scope on fallback (the original method has no spare registers).
+
+Startup offer handling skips only variant 8 of the R8 merged no-freemium navigation rule, preserves consent/logout variants, and redirects NativePremiumActivity to Home. The waiting-for-payment UI flag no longer triggers a local subscription redirect. The regional navigation approach was reviewed against [John NL's RemovePaywallsPatch](https://gitlab.com/johninnld/nl-morphe-patches/-/blob/7622f42a0e4a2f843e3b0f7c4598332bac6ffaaa/patches/src/main/kotlin/patches/deezer/RemovePaywallsPatch.kt). These are local navigation changes, not an account-country change or evidence of server-side access in every region.
+
+Checks on Android 14 x86_64 with all nine patches enabled: build/apply/sign succeeded; selecting Basique from search Tracks played Basique by Orelsan with a full 2:44 duration; the Android media card reopened the player; directly opening the native startup offer returned to Home. With only the package patch deselected, the other eight patches applied successfully, installed as deezer.android.app and the original notification action resolved to the app (unauthenticated cold start opened sign-in).
+
+Not verified: a newly created account receiving the welcome offer from the server, a Japanese/non-Free-region account, physical ARM runtime and authenticated notification playback without the suffix. A temporary Frida tracing session crashed in the injected Frida agent; normal UI checks above were repeated without instrumentation. Audio preference testing is covered in the newer section above.
+
 ## Deezer 9.0.27.3 compatibility
 
 The bundle port targets the original Android 8+ multi-architecture APKM from APKMirror (arm64-v8a, x86, and x86_64). The input archive SHA-256 is `ca4c9662e18f49d11b234c1c21437767d7afe1551aa28abf9dbabdaa1be7d83e`. Other archive variants have not been validated and may be rejected. Older app versions require their matching earlier bundle.
